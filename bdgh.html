@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Thank You, Myself</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Nunito:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse at top,#0d2257 0%,#06112e 70%) #06112e;color:#ffffff;
+font-family:"Nunito","Segoe UI",Arial,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:32px 18px;text-align:center}
+h1{font-family:"Playfair Display",Georgia,serif;font-weight:800;font-size:clamp(2.4rem,8vw,4.6rem);margin:0;color:#ffd978;line-height:1.15;letter-spacing:.5px;text-shadow:0 2px 18px rgba(0,0,0,.5)}
+.bottom{font-size:clamp(1.15rem,3.2vw,1.6rem);font-weight:600;margin:0;max-width:30ch;line-height:1.5;color:#ffffff}
+video{width:min(780px,100%);aspect-ratio:16/9;object-fit:contain;background:#020617;border:2px solid #ffd978;border-radius:10px;box-shadow:0 20px 60px rgba(0,0,0,.55)}
+#hint{margin:0;font-size:1rem;color:#b9c8ee;transition:opacity .6s}
+#hint.gone{opacity:0}
+</style>
+</head>
+<body>
+<h1>Thank You, Myself</h1>
+<video id="vid" src="bj.webm" autoplay muted loop playsinline></video>
+<p class="bottom">For every time I kept going, even when it was hard.</p>
+<p id="hint">Tap anywhere to turn on the music</p>
+<audio id="song" src="jh.mp3" preload="auto" loop></audio>
+
+<script>
+const vid=document.getElementById('vid'),
+      song=document.getElementById('song'),
+      hint=document.getElementById('hint');
+const events=['pointerdown','click','touchend','keydown'];
+let started=false;
+
+function startSong(){
+  if(started) return;
+  song.currentTime = vid.currentTime || 0;   // keep the song in step with the video
+  song.play().then(()=>{
+    started=true;
+    hint.classList.add('gone');
+    events.forEach(t=>removeEventListener(t,startSong));
+  }).catch(()=>{});
+}
+song.play().then(()=>{started=true;hint.classList.add('gone')}).catch(()=>{});
+events.forEach(t=>addEventListener(t,startSong));
+
+// When the video loops, restart the song so both repeat together.
+let last=0;
+vid.addEventListener('timeupdate',()=>{
+  if(vid.currentTime < last-1 && started){ song.currentTime=0; }
+  last=vid.currentTime;
+});
+vid.play().catch(()=>{});
+</script>
+</body>
+</html>
